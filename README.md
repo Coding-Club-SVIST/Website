@@ -53,7 +53,7 @@ The application follows a containerized architecture to ensure the environment r
 Experience the live version of the platform here: 👉 Live Project Link (Note: Use GitHub login to explore the member dashboard features.)
 
 ### 📂 Project Structure
-Plaintext
+```Plaintext
 ├── backend/            # Express API & Prisma Schema
 │   ├── prisma/         # Database migrations & models
 │   ├── src/            # TypeScript source code
@@ -62,10 +62,11 @@ Plaintext
 │   ├── src/            # Components & Pages
 │   └── Dockerfile      # Frontend container config
 └── docker-compose.yml  # Orchestration for the whole stack
+```
 
 ### 🤝 Contributing
-1.Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3 .Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4.Push to the Branch (`git push origin feature/AmazingFeature`)
-5.Open a Pull Request
+- 1.Fork the Project
+- 2.Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+- 3.Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+- 4.Push to the Branch (`git push origin feature/AmazingFeature`)
+- 5.Open a Pull Request
