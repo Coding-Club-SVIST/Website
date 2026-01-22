@@ -1,0 +1,50 @@
+services:
+  # 1. The Database
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      POSTGRES_DB: mydatabase
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 2. The Backend
+  backend:
+    build: ./backend
+    ports:
+      - "3001:3001"
+    environment:
+      DATABASE_URL: "postgresql://myuser:mypassword@db:5432/mydatabase?schema=public"
+      PORT: 3001
+      NODE_ENV: development
+      JWT_SECRET: "your-super-secret-jwt-key-change-this-in-production"
+      JWT_EXPIRE: "7d"
+      GITHUB_CLIENT_ID: "YOUR_ID"
+      GITHUB_CLIENT_SECRET: "YOUR_SECRET"
+      GITHUB_REDIRECT_URI: "http://localhost:3000/auth/github/callback"
+      RESEND_API_KEY: "re_xxxxxxxxxxxx"
+      NOTIFICATION_EMAIL: "notifications@yourdomain.com"
+      ADMIN_EMAIL: "admin@yourdomain.com"
+      FRONTEND_URL: "http://localhost:3000"
+      # Add Discord hooks and Superadmin IDs here as well...
+    depends_on:
+      - db
+    # This ensures Prisma migrations run before the app starts
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/server.js"
+
+  # 3. The Frontend
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: "http://localhost:3001"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
