@@ -49,8 +49,8 @@ docker compose up --build
 ### 🏗 System Architecture
 The application follows a containerized architecture to ensure the environment remains consistent from local development to production.
 
-### 🌐 Live Demo
-Experience the live version of the platform here: 👉 Live Project Link (Note: Use GitHub login to explore the member dashboard features.)
+### 🌐 Live 
+Experience the live version of the platform here: 👉 [🌐](https://coderride.foo.ng/) (Note: Use GitHub login to explore the member dashboard features.)
 
 ### 📂 Project Structure
 ```Plaintext
