@@ -14,7 +14,7 @@ const categories: { value: ProjectCategory; label: string }[] = [
 ];
 
 // Number of projects per page
-const PROJECTS_PER_PAGE = 3;
+const PROJECTS_PER_PAGE = 6;
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);

@@ -15,7 +15,7 @@ export default function MembersPage() {
   const [loading, setLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
-  const MEMBERS_PER_PAGE = 6;
+  const MEMBERS_PER_PAGE = 9;
 
   useEffect(() => {
     const loadData = async () => {

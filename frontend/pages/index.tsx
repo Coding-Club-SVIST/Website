@@ -31,6 +31,8 @@ export default function Home() {
     events: 0,
   });
 
+  const buckFunc = (c: number) => c <= 5 ? c : (c % 5 === 0 ? c : Math.floor(c / 5) * 5 + "+")
+
   const statsSectionRef = useRef<HTMLDivElement>(null);
 
   const scrollToStats = () => {
@@ -201,7 +203,7 @@ export default function Home() {
               {loading ? (
                 <span className="inline-block animate-pulse">...</span>
               ) : (
-                <>{animatedStats.members}+</>
+                <>{buckFunc(animatedStats.members)}</>
               )}
             </h3>
             <p className="text-slate-400 text-sm md:text-base font-medium">
@@ -223,7 +225,7 @@ export default function Home() {
               {loading ? (
                 <span className="inline-block animate-pulse">...</span>
               ) : (
-                <>{animatedStats.projects}+</>
+                <>{buckFunc(animatedStats.projects)}</>
               )}
             </h3>
             <p className="text-slate-400 text-sm md:text-base font-medium">
@@ -245,7 +247,7 @@ export default function Home() {
               {loading ? (
                 <span className="inline-block animate-pulse">...</span>
               ) : (
-                <>{animatedStats.events}+</>
+                <>{buckFunc(animatedStats.events)}</>
               )}
             </h3>
             <p className="text-slate-400 text-sm md:text-base font-medium">

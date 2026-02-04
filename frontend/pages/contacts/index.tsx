@@ -42,8 +42,8 @@ export default function ContactPage() {
     {
       icon: Mail,
       title: 'Email Us',
-      details: 'contact@codeclab.com',
-      link: 'mailto:contact@codeclab.com',
+      details: '[EMAIL NOT PROVISIONED]',
+      link: 'mailto:void',
       color: 'primary',
     },
     {
@@ -56,8 +56,8 @@ export default function ContactPage() {
     {
       icon: Phone,
       title: 'Call Us',
-      details: '+91 (123) 456-7890',
-      link: 'tel:+911234567890',
+      details: '[PHONE NOT PROVISIONED]',
+      link: 'tel:910000000000',
       color: 'accent',
     },
   ];
@@ -71,20 +71,20 @@ export default function ContactPage() {
     },
     {
       icon: Linkedin,
-      name: 'LinkedIn',
-      link: 'https://linkedin.com/company/yourorg',
+      name: 'LinkedIn [NOT PROVISIONED]',
+      link: 'https://linkedin.com/company/',
       color: 'hover:text-blue-400',
     },
     {
       icon: Twitter,
-      name: 'Twitter',
-      link: 'https://twitter.com/yourorg',
+      name: 'Twitter [NOT PROVISIONED]',
+      link: 'https://twitter.com/',
       color: 'hover:text-sky-400',
     },
     {
       icon: MessageSquare,
       name: 'Discord',
-      link: 'https://discord.gg/yourserver',
+      link: 'https://discord.gg/YzUtfk6zHP',
       color: 'hover:text-indigo-400',
     },
   ];
@@ -342,7 +342,7 @@ export default function ContactPage() {
             <div className="card p-8 bg-gradient-to-br from-primary/5 to-accent/5 border-primary/20 hover:shadow-xl transition-shadow duration-300">
               <h3 className="text-2xl font-bold text-white mb-4">Response Time</h3>
               <p className="text-slate-400 mb-4">
-                We typically respond to inquiries within 24-48 hours during business days.
+                We typically respond to inquiries within 24-48 hours during business days (excluding examination days).
               </p>
               <div className="flex items-center gap-2 text-sm text-slate-500">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
