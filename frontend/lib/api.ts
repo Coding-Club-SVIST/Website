@@ -95,6 +95,13 @@ export const authApi = {
   getCurrentUser: () => apiClient.get("/auth/me"),
 };
 
+export const notificationApi = {
+  getVapidPublicKey: () => apiClient.get("/notifications/vapid-key"),
+  subscribe: (subscription: any) => apiClient.post("/notifications/subscribe", subscription),
+  unsubscribe: (endpoint: string) => apiClient.post("/notifications/unsubscribe", { endpoint }),
+  send: (data: { title: string; body: string; url?: string }) => apiClient.post("/notifications/send", data),
+};
+
 export const adminApi = {
   // Member management
   getPendingMembers: () => apiClient.get("/admin/members/pending"),

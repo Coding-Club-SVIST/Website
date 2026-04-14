@@ -10,6 +10,7 @@ const PERMISSIONS = [
   { value: Permission.MANAGE_SKILLS, label: "Manage Skills" },
   { value: Permission.MANAGE_TAGS, label: "Manage Tags" },
   { value: Permission.MANAGE_ROLES, label: "Manage Roles" },
+  { value: Permission.SEND_NOTIFICATIONS, label: "Send Notifications"}
 ];
 
 interface RoleFormProps {

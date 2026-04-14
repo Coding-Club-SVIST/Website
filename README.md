@@ -8,6 +8,7 @@ A full-stack ecosystem designed to manage community memberships, showcase collab
 
 * **GitHub OAuth Integration:** Secure and instant login for developers.
 * **Project Showcase:** A centralized gallery of member-built projects with tech-stack tagging.
+* **Push Notifications:** Real-time push notifications to users for announcements from Admin team (opt-in).
 * **Automated Onboarding:** Streamlined member application process with Admin approval loops.
 * **Discord Sync:** Real-time notifications via webhooks for new signups and project submissions.
 * **Role Management:** Granular permissions (Admin, Lead, Member) with custom role support.

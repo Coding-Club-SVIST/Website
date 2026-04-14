@@ -17,8 +17,11 @@ import {
   User,
   Code,
   Award,
+  Bell,
+  BellOff,
 } from "lucide-react";
 import Link from "next/link";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -26,6 +29,8 @@ export default function ProfilePage() {
   const [member, setMember] = useState<Member | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const { isSubscribed, subscribe, unsubscribe, loading: notificationLoading } = useNotifications();
 
   const currentUserId = (session?.user as any)?.id;
   const userRole = (session?.user as any)?.role;
@@ -99,6 +104,14 @@ export default function ProfilePage() {
 
   const handleProjectsUpdate = (updatedProjects: Project[]) => {
     setMember((prev) => (prev ? { ...prev, projects: updatedProjects } : null));
+  };
+
+  const handleNotificationToggle = async () => {
+    if (isSubscribed) {
+      await unsubscribe();
+    } else {
+      await subscribe();
+    }
   };
 
   // Show access denied for suspended/pending users
@@ -244,9 +257,9 @@ export default function ProfilePage() {
                 />
               </div>
 
-              {/* Mobile Edit Button */}
+              {/* Mobile Action Buttons */}
               {isOwnProfile && (
-                <div className="mt-4 w-full lg:hidden">
+                <div className="mt-4 w-full lg:hidden flex flex-col gap-2">
                   <Link
                     href={`profile/edit`}
                     className="btn-secondary flex items-center justify-center gap-2 w-full text-sm py-2"
@@ -254,6 +267,29 @@ export default function ProfilePage() {
                     <Edit2 size={16} />
                     Edit Profile
                   </Link>
+                  <button
+                    onClick={handleNotificationToggle}
+                    disabled={notificationLoading}
+                    className={`flex items-center justify-center gap-2 w-full text-sm py-2 rounded-lg font-medium transition-all ${
+                      isSubscribed
+                        ? "bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
+                        : "bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30"
+                    } disabled:opacity-50`}
+                  >
+                    {notificationLoading ? (
+                      <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    ) : isSubscribed ? (
+                      <>
+                        <BellOff size={16} />
+                        Disable Notifications
+                      </>
+                    ) : (
+                      <>
+                        <Bell size={16} />
+                        Enable Notifications
+                      </>
+                    )}
+                  </button>
                 </div>
               )}
             </div>
@@ -302,9 +338,27 @@ export default function ProfilePage() {
                   </div>
                 </div>
 
-                {/* Desktop Edit Button */}
+                {/* Desktop Action Buttons */}
                 {isOwnProfile && (
-                  <div className="hidden lg:block">
+                  <div className="hidden lg:flex items-center gap-2">
+                    <button
+                      onClick={handleNotificationToggle}
+                      disabled={notificationLoading}
+                      title={isSubscribed ? "Disable Notifications" : "Enable Notifications"}
+                      className={`flex items-center justify-center p-2 rounded-lg font-medium transition-all ${
+                        isSubscribed
+                          ? "bg-red-500/20 text-red-400 border border-red-500/30 hover:bg-red-500/30"
+                          : "bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30"
+                      } disabled:opacity-50`}
+                    >
+                      {notificationLoading ? (
+                        <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                      ) : isSubscribed ? (
+                        <BellOff size={20} />
+                      ) : (
+                        <Bell size={20} />
+                      )}
+                    </button>
                     <Link
                       href={`profile/edit`}
                       className="btn-secondary flex items-center gap-2 px-4 py-2"
