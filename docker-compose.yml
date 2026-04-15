@@ -22,6 +22,9 @@ services:
       NODE_ENV: development
       JWT_SECRET: "your-super-secret-jwt-key-change-this-in-production"
       JWT_EXPIRE: "7d"
+      VAPID_PUBLIC_KEY: ""
+      VAPID_PRIVATE_KEY: ""
+      VAPID_NOTIFICATION_EMAIL: "notifications@yourdomain.com"
       GITHUB_CLIENT_ID: "YOUR_ID"
       GITHUB_CLIENT_SECRET: "YOUR_SECRET"
       GITHUB_REDIRECT_URI: "http://localhost:3000/auth/github/callback"

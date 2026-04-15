@@ -2,6 +2,7 @@
 export * from './config';
 export * from './discord';
 export * from './email';
+export * from './push';
 export * from './handlers/user';
 export * from './handlers/project';
 

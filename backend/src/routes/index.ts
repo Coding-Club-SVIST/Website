@@ -7,6 +7,7 @@ import tagRoutes from './tag.routes';
 import eventRoutes from './event.routes';
 import adminRoutes from './admin.routes';
 import customRoleRoutes from './customRole.routes';
+import notificationRoutes from './notification.routes';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/tags', tagRoutes);
 router.use('/events', eventRoutes);
 router.use('/admin', adminRoutes);
 router.use('/admin/custom-roles', customRoleRoutes);
+router.use('/notifications', notificationRoutes);
 
 export default router;

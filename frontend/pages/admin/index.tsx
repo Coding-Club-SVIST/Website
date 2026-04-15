@@ -22,6 +22,7 @@ import {
   Shield,
   Clock,
   Lock,
+  Bell,
 } from "lucide-react";
 
 import MembersTab from "@/components/admin/MembersTab/MembersTab";
@@ -30,8 +31,9 @@ import EventsTab from "@/components/admin/EventsTab/EventsTab";
 import SkillsTab from "@/components/admin/SkillsTab";
 import TagsTab from "@/components/admin/TagsTab";
 import RolesTab from "@/components/admin/RolesTab/RolesTab";
+import NotificationsTab from "@/components/admin/NotificationsTab";
 
-type TabType = "members" | "projects" | "events" | "skills" | "tags" | "roles";
+type TabType = "members" | "projects" | "events" | "skills" | "tags" | "roles" | "notifications";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -128,17 +130,18 @@ export default function AdminDashboard() {
         label: "Roles",
         permission: Permission.MANAGE_ROLES,
         description: "Manage custom roles and permissions",
-        // adminOnly: true(Comment it out if needed in future)
+      },
+      {
+        id: "notifications" as TabType,
+        icon: Bell,
+        label: "Notifications",
+        permission: Permission.SEND_NOTIFICATIONS,
+        description: "Send push notifications to members",
       },
     ];
 
     // Filter tabs based on permissions
     return allTabs.filter((tab) => {
-      // Roles tab is only for full ADMINs(Comment the following out if needed)
-      // if (tab.adminOnly) {
-      //   return (session?.user as any)?.role === "ADMIN";
-      // }
-
       // Other tabs require specific permissions
       return hasPermission(tab.permission);
     });
@@ -469,6 +472,10 @@ export default function AdminDashboard() {
                     onError={onError}
                     onDataChange={loadData}
                   />
+                )}
+              {activeTab === "notifications" &&
+                hasPermission(Permission.SEND_NOTIFICATIONS) && (
+                  <NotificationsTab />
                 )}
             </section>
           </>
