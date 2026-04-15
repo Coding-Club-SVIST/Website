@@ -8,22 +8,56 @@ export const useNotifications = () => {
   const [permission, setPermission] = useState<NotificationPermission>('default');
 
   const checkSubscription = useCallback(async () => {
-    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+    if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) {
       setLoading(false);
       return;
     }
 
-    const registration = await navigator.serviceWorker.ready;
-    const sub = await registration.pushManager.getSubscription();
-    
-    setIsSubscribed(!!sub);
-    setSubscription(sub);
-    setPermission(Notification.permission);
-    setLoading(false);
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const sub = await registration.pushManager.getSubscription();
+      
+      setIsSubscribed(!!sub);
+      setSubscription(sub);
+      setPermission(Notification.permission);
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
     checkSubscription();
+
+    // Listen for permission changes using the Permissions API
+    let permissionStatus: PermissionStatus | null = null;
+    
+    if ('permissions' in navigator) {
+      navigator.permissions.query({ name: 'notifications' as PermissionName }).then((status) => {
+        permissionStatus = status;
+        const handleChange = () => {
+          setPermission(Notification.permission);
+          checkSubscription();
+        };
+        
+        status.addEventListener('change', handleChange);
+        
+        // Cleanup listener
+        return () => {
+          status.removeEventListener('change', handleChange);
+        };
+      }).catch(err => {
+        console.warn('Permissions API not supported or failed:', err);
+      });
+    }
+
+    // Fallback: check on window focus
+    window.addEventListener('focus', checkSubscription);
+
+    return () => {
+      window.removeEventListener('focus', checkSubscription);
+    };
   }, [checkSubscription]);
 
   const urlBase64ToUint8Array = (base64String: string) => {
