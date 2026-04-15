@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import prisma from '../config/database';
 import { asyncHandler } from '../utils/asyncHandler';
-import { sendPushNotificationToAll } from '../lib/notifications/push';
+import { sendPushNotification, sendPushNotificationToAll } from '../lib/notifications/push';
 
 export class PushNotificationController {
   static subscribe = asyncHandler(async (req: Request, res: Response) => {
@@ -53,18 +53,26 @@ export class PushNotificationController {
   });
 
   static sendNotification = asyncHandler(async (req: Request, res: Response) => {
-    const { title, body, url } = req.body;
+    const { title, body, url, userId } = req.body;
 
     if (!title || !body) {
       return res.status(400).json({ message: 'Title and body are required' });
     }
 
-    await sendPushNotificationToAll({
-      title,
-      body,
-      data: { url },
-    });
-
-    res.status(200).json({ message: 'Notification sent to all subscribers' });
+    if (userId) {
+      await sendPushNotification(Number(userId), {
+        title,
+        body,
+        data: { url },
+      });
+      res.status(200).json({ message: `Notification sent to user ${userId}` });
+    } else {
+      await sendPushNotificationToAll({
+        title,
+        body,
+        data: { url },
+      });
+      res.status(200).json({ message: 'Notification sent to all subscribers' });
+    }
   });
 }

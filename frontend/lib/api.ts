@@ -99,7 +99,7 @@ export const notificationApi = {
   getVapidPublicKey: () => apiClient.get("/notifications/vapid-key"),
   subscribe: (subscription: any) => apiClient.post("/notifications/subscribe", subscription),
   unsubscribe: (endpoint: string) => apiClient.post("/notifications/unsubscribe", { endpoint }),
-  send: (data: { title: string; body: string; url?: string }) => apiClient.post("/notifications/send", data),
+  send: (data: { title: string; body: string; url?: string; userId?: number }) => apiClient.post("/notifications/send", data),
 };
 
 export const adminApi = {

@@ -6,6 +6,7 @@ const NotificationsTab: React.FC = () => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [url, setUrl] = useState("");
+  const [userId, setUserId] = useState<string>("");
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -17,11 +18,16 @@ const NotificationsTab: React.FC = () => {
     setMessage(null);
 
     try {
-      await notificationApi.send({ title, body, url });
-      setMessage({ type: "success", text: "Notification sent successfully to all subscribers!" });
+      const payload: any = { title, body, url };
+      if (userId.trim()) {
+        payload.userId = parseInt(userId, 10);
+      }
+      await notificationApi.send(payload);
+      setMessage({ type: "success", text: userId.trim() ? `Notification sent successfully to user ${userId}!` : "Notification sent successfully to all subscribers!" });
       setTitle("");
       setBody("");
       setUrl("");
+      setUserId("");
     } catch (error) {
       console.error("Failed to send notification:", error);
       setMessage({ type: "error", text: "Failed to send notification. Please try again." });
@@ -38,7 +44,7 @@ const NotificationsTab: React.FC = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-white">Browser Notifications</h2>
-          <p className="text-slate-400 text-sm">Send push notifications to all opted-in users</p>
+          <p className="text-slate-400 text-sm">Send push notifications to all opted-in users or a specific user</p>
         </div>
       </div>
 
@@ -47,6 +53,20 @@ const NotificationsTab: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="card p-6 border border-slate-700/50 bg-slate-800/30 backdrop-blur-sm">
             <form onSubmit={handleSendNotification} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-2">
+                  Target User ID (Optional)
+                </label>
+                <input
+                  type="number"
+                  value={userId}
+                  onChange={(e) => setUserId(e.target.value)}
+                  placeholder="e.g., 123 (Leave empty for all users)"
+                  className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-600 text-white focus:outline-none focus:border-primary transition-colors"
+                  min="1"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
                   Notification Title
