@@ -53,13 +53,21 @@ export class PushNotificationController {
   });
 
   static sendNotification = asyncHandler(async (req: Request, res: Response) => {
-    const { title, body, url, userId } = req.body;
+    const { title, body, url, userId, userIds } = req.body;
 
     if (!title || !body) {
       return res.status(400).json({ message: 'Title and body are required' });
     }
 
-    if (userId) {
+    if (userIds && Array.isArray(userIds)) {
+      const promises = userIds.map(id => sendPushNotification(Number(id), {
+        title,
+        body,
+        data: { url },
+      }));
+      await Promise.allSettled(promises);
+      res.status(200).json({ message: `Notification sent to ${userIds.length} users` });
+    } else if (userId) {
       await sendPushNotification(Number(userId), {
         title,
         body,

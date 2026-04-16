@@ -1,14 +1,71 @@
-import React, { useState } from "react";
-import { Bell, Send, Info } from "lucide-react";
-import { notificationApi } from "@/lib/api";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { Bell, Send, Info, Search, X, User as UserIcon } from "lucide-react";
+import { notificationApi, adminApi } from "@/lib/api";
+import { User } from "@/lib/types";
 
-const NotificationsTab: React.FC = () => {
+interface NotificationsTabProps {
+  users: User[];
+}
+
+const NotificationsTab: React.FC<NotificationsTabProps> = ({ users: initialUsers }) => {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [url, setUrl] = useState("");
-  const [userId, setUserId] = useState<string>("");
+  const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const [sending, setSending] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (searchTerm.length >= 3) {
+        setIsSearching(true);
+        try {
+          const res = await adminApi.getAllUsers({ search: searchTerm, limit: 10 });
+          setSearchResults(res.data.filter((u: User) => u.isActive));
+          setShowDropdown(true);
+        } catch (error) {
+          console.error("Search failed:", error);
+        } finally {
+          setIsSearching(false);
+        }
+      } else {
+        setSearchResults([]);
+        setShowDropdown(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Click outside listener
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSelectUser = (user: User) => {
+    if (!selectedUsers.find(u => u.id === user.id)) {
+      setSelectedUsers([...selectedUsers, user]);
+    }
+    setSearchTerm("");
+    setShowDropdown(false);
+  };
+
+  const handleRemoveUser = (userId: number) => {
+    setSelectedUsers(selectedUsers.filter(u => u.id !== userId));
+  };
 
   const handleSendNotification = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,15 +76,24 @@ const NotificationsTab: React.FC = () => {
 
     try {
       const payload: any = { title, body, url };
-      if (userId.trim()) {
-        payload.userId = parseInt(userId, 10);
+      
+      if (selectedUsers.length > 0) {
+        payload.userIds = selectedUsers.map(u => u.id);
       }
+      
       await notificationApi.send(payload);
-      setMessage({ type: "success", text: userId.trim() ? `Notification sent successfully to user ${userId}!` : "Notification sent successfully to all subscribers!" });
+      
+      setMessage({ 
+        type: "success", 
+        text: selectedUsers.length > 0
+          ? `Notification sent successfully to ${selectedUsers.length} user(s)!` 
+          : "Notification sent successfully to all subscribers!" 
+      });
       setTitle("");
       setBody("");
       setUrl("");
-      setUserId("");
+      setSelectedUsers([]);
+      setSearchTerm("");
     } catch (error) {
       console.error("Failed to send notification:", error);
       setMessage({ type: "error", text: "Failed to send notification. Please try again." });
@@ -44,7 +110,7 @@ const NotificationsTab: React.FC = () => {
         </div>
         <div>
           <h2 className="text-2xl font-bold text-white">Browser Notifications</h2>
-          <p className="text-slate-400 text-sm">Send push notifications to all opted-in users or a specific user</p>
+          <p className="text-slate-400 text-sm">Send push notifications to all opted-in users or specific users</p>
         </div>
       </div>
 
@@ -53,18 +119,80 @@ const NotificationsTab: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           <div className="card p-6 border border-slate-700/50 bg-slate-800/30 backdrop-blur-sm">
             <form onSubmit={handleSendNotification} className="space-y-4">
-              <div>
+              <div className="relative" ref={searchRef}>
                 <label className="block text-sm font-medium text-slate-300 mb-2">
-                  Target User ID (Optional)
+                  Target Users (Optional - Leave empty for Broadcast)
                 </label>
-                <input
-                  type="number"
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
-                  placeholder="e.g., 123 (Leave empty for all users)"
-                  className="w-full px-4 py-3 rounded-lg bg-slate-900 border border-slate-600 text-white focus:outline-none focus:border-primary transition-colors"
-                  min="1"
-                />
+                
+                <div className="flex flex-wrap gap-2 p-2 rounded-lg bg-slate-900 border border-slate-600 focus-within:border-primary transition-colors min-h-[46px]">
+                  {selectedUsers.map(user => (
+                    <span 
+                      key={user.id}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-primary/20 text-primary-light text-xs font-medium rounded-md border border-primary/30"
+                    >
+                      {user.member?.fullName || user.username}
+                      <button 
+                        type="button"
+                        onClick={() => handleRemoveUser(user.id)}
+                        className="hover:text-white transition-colors"
+                      >
+                        <X size={14} />
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder={selectedUsers.length === 0 ? "Search by username or name (min. 3 chars)..." : "Add more users..."}
+                    className="flex-1 bg-transparent border-none outline-none text-white text-sm min-w-[200px]"
+                  />
+                </div>
+
+                {/* Dropdown Results */}
+                {showDropdown && (searchResults.length > 0 || isSearching) && (
+                  <div className="absolute z-10 w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-xl max-h-60 overflow-y-auto overflow-x-hidden">
+                    {isSearching ? (
+                      <div className="p-4 text-center text-slate-400">
+                        <div className="inline-block animate-spin rounded-full h-4 w-4 border-b-2 border-primary mr-2"></div>
+                        Searching...
+                      </div>
+                    ) : (
+                      searchResults.map(user => (
+                        <button
+                          key={user.id}
+                          type="button"
+                          onClick={() => handleSelectUser(user)}
+                          disabled={selectedUsers.some(u => u.id === user.id)}
+                          className="w-full text-left px-4 py-3 hover:bg-slate-700/50 flex items-center justify-between group transition-colors disabled:opacity-50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center">
+                              {user.avatarUrl ? (
+                                <img src={user.avatarUrl} alt="" className="w-8 h-8 rounded-full" />
+                              ) : (
+                                <UserIcon size={16} className="text-slate-400" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-medium text-white group-hover:text-primary transition-colors">
+                                {user.member?.fullName || user.username}
+                              </p>
+                              <p className="text-xs text-slate-400">@{user.username}</p>
+                            </div>
+                          </div>
+                          {selectedUsers.some(u => u.id === user.id) && (
+                            <span className="text-[10px] bg-slate-600 text-slate-300 px-1.5 py-0.5 rounded">Selected</span>
+                          )}
+                        </button>
+                      ))
+                    )}
+                  </div>
+                )}
+                
+                <p className="text-xs text-slate-500 mt-1">
+                  Leave empty to send a global broadcast to all subscribers.
+                </p>
               </div>
 
               <div>
