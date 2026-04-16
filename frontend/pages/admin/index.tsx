@@ -475,7 +475,7 @@ export default function AdminDashboard() {
                 )}
               {activeTab === "notifications" &&
                 hasPermission(Permission.SEND_NOTIFICATIONS) && (
-                  <NotificationsTab />
+                  <NotificationsTab users={allUsers} />
                 )}
             </section>
           </>

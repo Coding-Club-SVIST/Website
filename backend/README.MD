@@ -48,6 +48,10 @@ GITHUB_CLIENT_SECRET=your-github-client-secret
 GITHUB_REDIRECT_URI=http://localhost:3000/auth/github/callback
 
 FRONTEND_URL=http://localhost:3000
+
+VAPID_PUBLIC_KEY=
+VAPID_PRIVATE_KEY=
+VAPID_NOTIFICATION_EMAIL=
 ```
 
 ### 3. GitHub OAuth Setup (FREE)
@@ -74,6 +78,14 @@ npm run prisma:migrate
 # (Optional) Open Prisma Studio to view database
 npm run prisma:studio
 ```
+
+### 5. Generate VAPID Keys
+```bash
+# Generate public and private keys
+npx web-push generate-vapid-keys
+```
+
+Add the keys to `.env`
 
 ### 5. Run the Server
 
@@ -102,6 +114,10 @@ Server will run on `http://localhost:5000`
 - `PUT /api/members/profile` - Update own profile (Auth)
 - `POST /api/members/skills` - Add skills (Auth)
 - `DELETE /api/members/skills/:skillId` - Remove skill (Auth)
+
+### Notifications
+- `POST /api/notifications/subscribe` - Subscribe to push notifications
+- `POST /api/notifications/unsubscribe` - Unsubscribe to push notifications
 
 ### Projects
 - `GET /api/projects` - Get all projects (with filters)
@@ -138,6 +154,7 @@ Server will run on `http://localhost:5000`
 - `PUT /api/admin/projects/:projectId/approve` - Approve/reject project
 - `DELETE /api/admin/projects/:projectId` - Remove project
 - `PUT /api/admin/events/:eventId/featured` - Set event as featured
+- `POST /api/notifications/send` - Send push notifications to targeted users or broadcast gloablly
 
 ## Database Schema
 
@@ -152,6 +169,9 @@ Server will run on `http://localhost:5000`
 - Bio, role title, dev stack
 - Skills (many-to-many)
 - Projects (one-to-many)
+
+### Push Subscription
+- Subscription information
 
 ### Project
 - Title, description
@@ -188,6 +208,7 @@ Server will run on `http://localhost:5000`
 - Manage all content
 - Set featured events
 - Manage skills & tags
+- Send push notifications
 
 ## Project Structure
 

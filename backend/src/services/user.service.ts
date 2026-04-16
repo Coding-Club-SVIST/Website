@@ -358,9 +358,21 @@ export class UserService {
   }
   static async getAllUsers(
     skip = 0,
-    limit = 100
+    limit = 100,
+    search?: string
   ): Promise<UserWithRelations[]> {
+    const where: any = {};
+
+    if (search) {
+      where.OR = [
+        { username: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+        { member: { fullName: { contains: search, mode: "insensitive" } } },
+      ];
+    }
+
     const users = await prisma.user.findMany({
+      where,
       skip,
       take: limit,
       include: {

@@ -99,7 +99,8 @@ export class AdminController {
   static getAllUsers = asyncHandler(async (req: Request, res: Response) => {
     const skip = parseInt(req.query.skip as string) || 0;
     const limit = parseInt(req.query.limit as string) || 100;
-    const users = await UserService.getAllUsers(skip, limit);
+    const search = req.query.search as string;
+    const users = await UserService.getAllUsers(skip, limit, search);
     return res.json(users);
   });
 
