@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Bell, Send, Info, Search, X, User as UserIcon } from "lucide-react";
+import { Bell, Send, Info, X, User as UserIcon } from "lucide-react";
 import { notificationApi, adminApi } from "@/lib/api";
 import { User } from "@/lib/types";
 
